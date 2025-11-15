@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mockup Studio Pro - Advanced Product Designer</title>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
     <style>
         * {
             margin: 0;
@@ -1801,12 +1802,76 @@ DESIGN</textarea>
             }
         };
 
+        let historyDebounce = null;
+        let lastHistorySnapshot = null;
+
         // Initialize Application
         document.addEventListener('DOMContentLoaded', () => {
             initializeEventListeners();
-            renderMockup();
             loadFromLocalStorage();
+            updateUIFromState();
+            renderMockup();
+            saveToHistory(true);
         });
+
+        function snapshotState() {
+            const { history, historyIndex, ...state } = appState;
+            return JSON.parse(JSON.stringify(state));
+        }
+
+        function saveToHistory(force = false) {
+            if (historyDebounce) {
+                clearTimeout(historyDebounce);
+                historyDebounce = null;
+            }
+
+            const snapshot = snapshotState();
+            const serialized = JSON.stringify(snapshot);
+
+            if (!force && serialized === lastHistorySnapshot) {
+                return;
+            }
+
+            appState.history = appState.history.slice(0, appState.historyIndex + 1);
+            appState.history.push(snapshot);
+
+            if (appState.history.length > 50) {
+                appState.history.shift();
+            }
+
+            appState.historyIndex = appState.history.length - 1;
+            lastHistorySnapshot = serialized;
+        }
+
+        function queueHistorySnapshot() {
+            if (historyDebounce) {
+                clearTimeout(historyDebounce);
+            }
+
+            historyDebounce = setTimeout(() => {
+                saveToHistory();
+            }, 400);
+        }
+
+        function restoreStateFromHistory(snapshot) {
+            if (!snapshot) {
+                return;
+            }
+
+            if (historyDebounce) {
+                clearTimeout(historyDebounce);
+                historyDebounce = null;
+            }
+
+            const state = JSON.parse(JSON.stringify(snapshot));
+            Object.keys(state).forEach((key) => {
+                appState[key] = state[key];
+            });
+
+            updateUIFromState();
+            renderMockup();
+            lastHistorySnapshot = JSON.stringify(snapshot);
+        }
 
         // Event Listeners
         function initializeEventListeners() {
@@ -1850,28 +1915,33 @@ DESIGN</textarea>
             document.getElementById('designText').addEventListener('input', (e) => {
                 appState.design.text = e.target.value;
                 renderMockup();
+                queueHistorySnapshot();
             });
 
             document.getElementById('fontSize').addEventListener('input', (e) => {
                 appState.design.fontSize = e.target.value;
                 document.getElementById('fontSizeValue').textContent = `${e.target.value}px`;
                 renderMockup();
+                queueHistorySnapshot();
             });
 
             document.getElementById('fontFamily').addEventListener('change', (e) => {
                 appState.design.fontFamily = e.target.value;
                 renderMockup();
+                saveToHistory();
             });
 
             document.getElementById('textColor').addEventListener('input', (e) => {
                 appState.design.textColor = e.target.value;
                 renderMockup();
+                queueHistorySnapshot();
             });
 
             // Color Controls
             document.getElementById('productColor').addEventListener('input', (e) => {
                 appState.product.color = e.target.value;
                 renderMockup();
+                queueHistorySnapshot();
             });
 
             // Effects Controls
@@ -1879,12 +1949,14 @@ DESIGN</textarea>
                 appState.effects.wrinkles = e.target.value;
                 document.getElementById('wrinklesValue').textContent = `${e.target.value}%`;
                 renderMockup();
+                queueHistorySnapshot();
             });
 
             document.getElementById('gloss').addEventListener('input', (e) => {
                 appState.effects.gloss = e.target.value;
                 document.getElementById('glossValue').textContent = `${e.target.value}%`;
                 renderMockup();
+                queueHistorySnapshot();
             });
 
             // Position Controls
@@ -1892,6 +1964,7 @@ DESIGN</textarea>
                 appState.design.rotation = e.target.value;
                 document.getElementById('rotationValue').textContent = `${e.target.value}°`;
                 renderMockup();
+                queueHistorySnapshot();
             });
 
             // Image Upload
@@ -1952,6 +2025,7 @@ DESIGN</textarea>
                 const label = document.getElementById('letterSpacingValue');
                 if (label) label.textContent = `${value}px`;
                 renderMockup();
+                queueHistorySnapshot();
             });
 
             // Image Size Control
@@ -1961,6 +2035,7 @@ DESIGN</textarea>
                 const label = document.getElementById('imageSizeValue');
                 if (label) label.textContent = `${value}%`;
                 renderMockup();
+                queueHistorySnapshot();
             });
 
             // Position Controls (X/Y)
@@ -1970,6 +2045,7 @@ DESIGN</textarea>
                 const label = document.getElementById('xPosValue');
                 if (label) label.textContent = `${value}px`;
                 renderMockup();
+                queueHistorySnapshot();
             });
 
             document.getElementById('yPos').addEventListener('input', (e) => {
@@ -1978,6 +2054,7 @@ DESIGN</textarea>
                 const label = document.getElementById('yPosValue');
                 if (label) label.textContent = `${value}px`;
                 renderMockup();
+                queueHistorySnapshot();
             });
 
             // Additional Effect Controls
@@ -1987,6 +2064,7 @@ DESIGN</textarea>
                 const label = document.getElementById('brightnessValue');
                 if (label) label.textContent = `${value}%`;
                 applyEffects();
+                queueHistorySnapshot();
             });
 
             document.getElementById('contrast').addEventListener('input', (e) => {
@@ -1995,6 +2073,7 @@ DESIGN</textarea>
                 const label = document.getElementById('contrastValue');
                 if (label) label.textContent = `${value}%`;
                 applyEffects();
+                queueHistorySnapshot();
             });
 
             document.getElementById('shadow').addEventListener('input', (e) => {
@@ -2003,21 +2082,21 @@ DESIGN</textarea>
                 const label = document.getElementById('shadowValue');
                 if (label) label.textContent = `${value}%`;
                 applyEffects();
+                queueHistorySnapshot();
             });
 
             // Background / Accent Color Controls
             document.getElementById('accentColor').addEventListener('input', (e) => {
                 appState.product.accentColor = e.target.value;
                 renderMockup();
+                queueHistorySnapshot();
             });
 
             document.getElementById('bgColor').addEventListener('input', (e) => {
                 const value = e.target.value;
                 appState.product.bgColor = value;
-                const viewport = document.getElementById('canvasViewport');
-                if (viewport) {
-                    viewport.style.backgroundColor = value;
-                }
+                applyGridState();
+                queueHistorySnapshot();
             });
 
         }
@@ -2069,6 +2148,7 @@ DESIGN</textarea>
             
             appState.currentView = view;
             renderMockup();
+            saveToHistory();
         }
 
         // Zoom Controls
@@ -2076,6 +2156,7 @@ DESIGN</textarea>
             appState.zoom = Math.max(50, Math.min(200, appState.zoom + delta));
             document.getElementById('zoomValue').textContent = `${appState.zoom}%`;
             renderMockup();
+            queueHistorySnapshot();
         }
 
         function resetView() {
@@ -2085,14 +2166,29 @@ DESIGN</textarea>
             document.getElementById('rotation').value = 0;
             document.getElementById('rotationValue').textContent = '0°';
             renderMockup();
+            saveToHistory();
         }
 
         // Grid Toggle
         function toggleGrid() {
             appState.gridEnabled = !appState.gridEnabled;
-            document.getElementById('gridToggle').classList.toggle('active', appState.gridEnabled);
-            
+            applyGridState();
+            queueHistorySnapshot();
+        }
+
+        function applyGridState() {
+            const gridToggle = document.getElementById('gridToggle');
+            if (gridToggle) {
+                gridToggle.classList.toggle('active', appState.gridEnabled);
+            }
+
             const viewport = document.getElementById('canvasViewport');
+            if (!viewport) {
+                return;
+            }
+
+            viewport.style.backgroundColor = appState.product.bgColor;
+
             if (appState.gridEnabled) {
                 viewport.style.backgroundImage = 'repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0px, transparent 1px, transparent 20px, rgba(255,255,255,0.05) 21px), repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0px, transparent 1px, transparent 20px, rgba(255,255,255,0.05) 21px)';
             } else {
@@ -2277,19 +2373,21 @@ DESIGN</textarea>
             const mockup = document.querySelector('.mockup-stage > div');
             
             if (mockup) {
+                mockup.querySelectorAll('.gloss-overlay').forEach((overlay) => overlay.remove());
                 const filters = [];
-                
+
                 if (effects.brightness !== 100) {
                     filters.push(`brightness(${effects.brightness}%)`);
                 }
-                
+
                 if (effects.contrast !== 100) {
                     filters.push(`contrast(${effects.contrast}%)`);
                 }
-                
+
                 if (effects.gloss > 0) {
                     // Add gloss effect simulation
                     const glossOverlay = document.createElement('div');
+                    glossOverlay.className = 'gloss-overlay';
                     glossOverlay.style.position = 'absolute';
                     glossOverlay.style.top = '0';
                     glossOverlay.style.left = '0';
@@ -2302,12 +2400,12 @@ DESIGN</textarea>
                     glossOverlay.style.pointerEvents = 'none';
                     mockup.appendChild(glossOverlay);
                 }
-                
-                mockup.style.filter = filters.join(' ');
-                
-                if (effects.shadow > 0) {
-                    mockup.style.boxShadow = `0 ${effects.shadow / 2}px ${effects.shadow}px rgba(0,0,0,${effects.shadow / 200})`;
-                }
+
+                mockup.style.filter = filters.length ? filters.join(' ') : 'none';
+
+                mockup.style.boxShadow = effects.shadow > 0
+                    ? `0 ${effects.shadow / 2}px ${effects.shadow}px rgba(0,0,0,${effects.shadow / 200})`
+                    : 'none';
             }
         }
 
@@ -2331,6 +2429,7 @@ DESIGN</textarea>
             document.querySelector(`[data-texture="${texture}"]`).classList.add('active');
             appState.product.texture = texture;
             renderMockup();
+            queueHistorySnapshot();
         }
 
         // Layer Controls
@@ -2343,29 +2442,17 @@ DESIGN</textarea>
             event.target.textContent = event.target.classList.contains('locked') ? '🔒' : '🔓';
         }
 
-        // History Management
-        function saveToHistory() {
-            const state = JSON.parse(JSON.stringify(appState));
-            appState.history = appState.history.slice(0, appState.historyIndex + 1);
-            appState.history.push(state);
-            appState.historyIndex++;
-        }
-
         function undo() {
             if (appState.historyIndex > 0) {
                 appState.historyIndex--;
-                const previousState = appState.history[appState.historyIndex];
-                Object.assign(appState, previousState);
-                renderMockup();
+                restoreStateFromHistory(appState.history[appState.historyIndex]);
             }
         }
 
         function redo() {
             if (appState.historyIndex < appState.history.length - 1) {
                 appState.historyIndex++;
-                const nextState = appState.history[appState.historyIndex];
-                Object.assign(appState, nextState);
-                renderMockup();
+                restoreStateFromHistory(appState.history[appState.historyIndex]);
             }
         }
 
@@ -2455,7 +2542,8 @@ DESIGN</textarea>
 
         // Project Management
         function saveProject() {
-            const projectData = JSON.stringify(appState);
+            const snapshot = snapshotState();
+            const projectData = JSON.stringify(snapshot);
             localStorage.setItem('mockupProProject', projectData);
             
             // Also create downloadable JSON
@@ -2484,6 +2572,7 @@ DESIGN</textarea>
                             Object.assign(appState, data);
                             renderMockup();
                             updateUIFromState();
+                            saveToHistory(true);
                             showNotification('Projekt importiert!');
                         } catch (error) {
                             alert('Fehler beim Importieren der Datei');
@@ -2498,7 +2587,7 @@ DESIGN</textarea>
 
         // Local Storage
         function saveToLocalStorage() {
-            localStorage.setItem('mockupProProject', JSON.stringify(appState));
+            localStorage.setItem('mockupProProject', JSON.stringify(snapshotState()));
         }
 
         function loadFromLocalStorage() {
@@ -2507,12 +2596,12 @@ DESIGN</textarea>
                 try {
                     const data = JSON.parse(saved);
                     Object.assign(appState, data);
-                    updateUIFromState();
-                    renderMockup();
+                    return true;
                 } catch (error) {
                     console.error('Error loading saved project:', error);
                 }
             }
+            return false;
         }
 
         // Update UI from State
@@ -2590,6 +2679,8 @@ DESIGN</textarea>
             // Zoom-Anzeige
             const zoomVal = document.getElementById('zoomValue');
             if (zoomVal) zoomVal.textContent = `${appState.zoom}%`;
+
+            applyGridState();
         }
 
         // AI Design Generation (Simulated)
@@ -2619,6 +2710,7 @@ DESIGN</textarea>
                 updateUIFromState();
                 renderMockup();
                 hideLoading();
+                saveToHistory();
                 showNotification('KI-Design generiert!');
             }, 2000);
         }
