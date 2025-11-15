@@ -1,0 +1,2694 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mockup Studio Pro - Advanced Product Designer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary: #764ba2;
+            --dark: #1a1a2e;
+            --sidebar: #242438;
+            --panel: #2d2d44;
+            --text-light: #e4e4f0;
+            --border: #3a3a52;
+            --accent: #00d4ff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--dark);
+            color: var(--text-light);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Header */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .app-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .app-title .logo {
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .header-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .header-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Main Layout */
+        .app-container {
+            display: flex;
+            height: calc(100vh - 50px);
+        }
+
+        /* Left Toolbar */
+        .toolbar {
+            width: 60px;
+            background: var(--sidebar);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 10px 0;
+        }
+
+        .tool-btn {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            background: transparent;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .tool-btn:hover {
+            background: var(--panel);
+            color: var(--text-light);
+        }
+
+        .tool-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tool-btn .icon {
+            font-size: 20px;
+        }
+
+        .tool-btn .label {
+            font-size: 9px;
+            text-transform: uppercase;
+        }
+
+        /* Sidebar Panels */
+        .sidebar {
+            width: 350px;
+            background: var(--panel);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-tabs {
+            display: flex;
+            background: var(--sidebar);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-tab {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+            border-bottom: 2px solid transparent;
+        }
+
+        .sidebar-tab.active {
+            background: var(--panel);
+            color: var(--text-light);
+            border-bottom-color: var(--primary);
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        /* Panel Sections */
+        .panel-section {
+            margin-bottom: 25px;
+            background: var(--sidebar);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid var(--border);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95em;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .panel-title::before {
+            content: '▼';
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+
+        .panel-section.collapsed .panel-title::before {
+            transform: rotate(-90deg);
+        }
+
+        .panel-section.collapsed .panel-content {
+            display: none;
+        }
+
+        /* Form Controls */
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.85em;
+            color: #aaa;
+            font-weight: 500;
+        }
+
+        .control-input {
+            width: 100%;
+            background: var(--dark);
+            border: 1px solid var(--border);
+            color: var(--text-light);
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .control-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        }
+
+        /* Advanced Slider */
+        .slider-group {
+            margin-bottom: 15px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .slider-label {
+            font-size: 0.85em;
+            color: #aaa;
+        }
+
+        .slider-value {
+            background: var(--primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            min-width: 45px;
+            text-align: center;
+        }
+
+        .slider-container {
+            position: relative;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            background: var(--dark);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Color Picker Group */
+        .color-picker-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .color-picker-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .color-picker-label {
+            font-size: 0.75em;
+            color: #888;
+        }
+
+        .color-picker-wrapper {
+            position: relative;
+            width: 100%;
+            height: 35px;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .color-picker {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            cursor: pointer;
+        }
+
+        .color-display {
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* Texture Gallery */
+        .texture-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .texture-item {
+            aspect-ratio: 1;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .texture-item:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .texture-item.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.3);
+        }
+
+        .texture-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Canvas Area */
+        .canvas-area {
+            flex: 1;
+            background: #1e1e2e;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Module Tabs */
+        .module-tabs {
+            background: var(--sidebar);
+            display: flex;
+            padding: 0 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .module-tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+            border-bottom: 3px solid transparent;
+            margin-right: 10px;
+        }
+
+        .module-tab.active {
+            color: var(--text-light);
+            background: var(--panel);
+            border-bottom-color: var(--accent);
+        }
+
+        /* Canvas Toolbar */
+        .canvas-toolbar {
+            background: var(--panel);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toolbar-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .toolbar-btn {
+            background: var(--dark);
+            border: 1px solid var(--border);
+            color: var(--text-light);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .toolbar-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .toolbar-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .zoom-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--dark);
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .zoom-value {
+            min-width: 50px;
+            text-align: center;
+            font-size: 0.85em;
+        }
+
+        /* Main Canvas */
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background-image: 
+                linear-gradient(45deg, #1a1a2e 25%, transparent 25%),
+                linear-gradient(-45deg, #1a1a2e 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #1a1a2e 75%),
+                linear-gradient(-45deg, transparent 75%, #1a1a2e 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+
+        .canvas-viewport {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Product Mockup Styles */
+        .mockup-stage {
+            position: relative;
+            transform-style: preserve-3d;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Advanced T-Shirt Mockup */
+        .tshirt-3d {
+            width: 400px;
+            height: 480px;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .tshirt-body {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            clip-path: polygon(
+                20% 0%, 80% 0%,
+                85% 8%, 100% 15%,
+                100% 25%, 85% 20%,
+                85% 95%, 75% 100%,
+                25% 100%, 15% 95%,
+                15% 20%, 0% 25%,
+                0% 15%, 15% 8%
+            );
+            box-shadow: 
+                inset -30px 0 40px rgba(0,0,0,0.2),
+                inset 30px 0 40px rgba(0,0,0,0.2),
+                0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .tshirt-collar {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 40px;
+            background: inherit;
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.3);
+        }
+
+        .tshirt-design-area {
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 40%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .tshirt-fold {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(0,0,0,0.1) 20%, 
+                rgba(0,0,0,0.2) 50%,
+                rgba(0,0,0,0.1) 80%,
+                transparent 100%
+            );
+        }
+
+        .fold1 { top: 30%; }
+        .fold2 { top: 50%; }
+        .fold3 { top: 70%; }
+
+        /* Advanced Mug Mockup */
+        .mug-3d {
+            width: 300px;
+            height: 350px;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .mug-body {
+            width: 250px;
+            height: 300px;
+            background: linear-gradient(90deg, #f0f0f0 0%, #ffffff 50%, #f0f0f0 100%);
+            border-radius: 0 0 20px 20px;
+            position: relative;
+            box-shadow: 
+                inset -30px 0 40px rgba(0,0,0,0.1),
+                inset 30px 0 40px rgba(255,255,255,0.5),
+                0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .mug-handle {
+            position: absolute;
+            width: 100px;
+            height: 140px;
+            border: 20px solid #f0f0f0;
+            border-left: none;
+            border-radius: 0 60px 60px 0;
+            top: 60px;
+            right: -80px;
+            box-shadow: 
+                inset -15px 0 30px rgba(0,0,0,0.1),
+                10px 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .mug-rim {
+            position: absolute;
+            top: -10px;
+            left: -5px;
+            right: -5px;
+            height: 20px;
+            background: linear-gradient(90deg, #e0e0e0 0%, #f5f5f5 50%, #e0e0e0 100%);
+            border-radius: 50% / 100%;
+            box-shadow: 
+                0 -5px 10px rgba(0,0,0,0.1),
+                inset 0 3px 5px rgba(0,0,0,0.05);
+        }
+
+        .mug-design-area {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            height: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Phone Case Mockup */
+        .phone-3d {
+            width: 240px;
+            height: 480px;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .phone-frame {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border-radius: 35px;
+            padding: 8px;
+            box-shadow: 
+                0 0 0 2px #333,
+                0 20px 40px rgba(0,0,0,0.3),
+                inset 0 2px 4px rgba(255,255,255,0.1);
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 27px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 130px;
+            height: 28px;
+            background: #1a1a1a;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .phone-camera {
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background: #333;
+            border-radius: 50%;
+            box-shadow: 
+                0 0 0 2px #555,
+                -20px 0 0 0 #222;
+        }
+
+        .phone-design-area {
+            padding: 50px 20px 20px;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Poster/Canvas Mockup */
+        .poster-3d {
+            width: 400px;
+            height: 500px;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .poster-frame {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #8b7355 0%, #a0826d 50%, #8b7355 100%);
+            padding: 20px;
+            box-shadow: 
+                0 10px 40px rgba(0,0,0,0.3),
+                inset 0 2px 4px rgba(255,255,255,0.2),
+                inset 0 -2px 4px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .poster-canvas {
+            width: 100%;
+            height: 100%;
+            background: white;
+            position: relative;
+            box-shadow: 
+                inset 0 0 30px rgba(0,0,0,0.1),
+                0 0 0 1px rgba(0,0,0,0.05);
+        }
+
+        .poster-design-area {
+            width: 100%;
+            height: 100%;
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Hoodie Mockup */
+        .hoodie-3d {
+            width: 450px;
+            height: 500px;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .hoodie-body {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            position: relative;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 
+                inset -40px 0 60px rgba(0,0,0,0.2),
+                inset 40px 0 60px rgba(0,0,0,0.2),
+                0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .hoodie-hood {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 280px;
+            height: 150px;
+            background: inherit;
+            border-radius: 50% 50% 0 0;
+            box-shadow: 
+                inset 0 20px 40px rgba(0,0,0,0.3),
+                0 -10px 20px rgba(0,0,0,0.2);
+            z-index: -1;
+        }
+
+        .hoodie-pocket {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 120px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 0 0 20px 20px;
+            box-shadow: inset 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .hoodie-strings {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .hoodie-string {
+            width: 4px;
+            height: 60px;
+            background: white;
+            border-radius: 2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .hoodie-design-area {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 30%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Design Content */
+        .design-content {
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            position: relative;
+            z-index: 10;
+        }
+
+        .design-text {
+            font-size: 24px;
+            line-height: 1.4;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .design-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* Right Properties Panel */
+        .properties-panel {
+            width: 300px;
+            background: var(--panel);
+            border-left: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        /* Layers Panel */
+        .layers-panel {
+            margin-bottom: 20px;
+        }
+
+        .layers-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .layers-title {
+            font-size: 0.95em;
+            font-weight: 600;
+        }
+
+        .layer-add-btn {
+            background: var(--primary);
+            border: none;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .layers-list {
+            background: var(--dark);
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .layer-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .layer-item:last-child {
+            border-bottom: none;
+        }
+
+        .layer-item:hover {
+            background: var(--sidebar);
+        }
+
+        .layer-item.active {
+            background: var(--primary);
+        }
+
+        .layer-visibility {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            background: transparent;
+            border: 1px solid #666;
+            border-radius: 3px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .layer-visibility.visible::after {
+            content: '👁';
+            font-size: 12px;
+        }
+
+        .layer-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--border);
+            border-radius: 3px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .layer-name {
+            flex: 1;
+            font-size: 0.85em;
+        }
+
+        .layer-lock {
+            width: 20px;
+            height: 20px;
+            background: transparent;
+            border: none;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .layer-lock.locked {
+            color: var(--accent);
+        }
+
+        /* Bottom Status Bar */
+        .status-bar {
+            height: 30px;
+            background: var(--sidebar);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 0.8em;
+            color: #888;
+        }
+
+        .status-item {
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            background: #4caf50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Export Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--panel);
+            border-radius: 10px;
+            padding: 30px;
+            min-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .modal-header {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .export-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .export-option {
+            background: var(--dark);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .export-option:hover {
+            border-color: var(--primary);
+            background: var(--sidebar);
+        }
+
+        .export-option.selected {
+            border-color: var(--accent);
+            background: var(--primary);
+        }
+
+        .export-format {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .export-desc {
+            font-size: 0.85em;
+            color: #888;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel {
+            background: var(--dark);
+            color: var(--text-light);
+            border: 1px solid var(--border);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 5px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1400px) {
+            .properties-panel {
+                display: none;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 280px;
+            }
+        }
+    </style>
+
+    <!-- Export helper library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNa5lGd8ZZrVSu2VvulaHYodEc/WWEDuJeayQMZT6X0hgqP/d9vywgqbiZ9erjRzCQXDpUe1koRaSPo6e7/j0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <!-- App Header -->
+    <div class="app-header">
+        <div class="app-title">
+            <div class="logo">M</div>
+            <span>Mockup Studio Pro</span>
+        </div>
+        <div class="header-controls">
+            <button class="header-btn" id="importBtn">📁 Import JSON</button>
+            <button class="header-btn" id="exportBtn">💾 Export JSON</button>
+            <button class="header-btn" id="undoBtn">↶ Undo</button>
+            <button class="header-btn" id="redoBtn">↷ Redo</button>
+            <button class="header-btn" id="saveBtn">💾 Save Project</button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        <!-- Left Toolbar -->
+        <div class="toolbar">
+            <button class="tool-btn active" data-tool="select">
+                <span class="icon">↖</span>
+                <span class="label">Select</span>
+            </button>
+            <button class="tool-btn" data-tool="text">
+                <span class="icon">T</span>
+                <span class="label">Text</span>
+            </button>
+            <button class="tool-btn" data-tool="image">
+                <span class="icon">🖼</span>
+                <span class="label">Image</span>
+            </button>
+            <button class="tool-btn" data-tool="shape">
+                <span class="icon">□</span>
+                <span class="label">Shape</span>
+            </button>
+            <button class="tool-btn" data-tool="draw">
+                <span class="icon">✏</span>
+                <span class="label">Draw</span>
+            </button>
+            <button class="tool-btn" data-tool="3d">
+                <span class="icon">🎲</span>
+                <span class="label">3D</span>
+            </button>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-tabs">
+                <button class="sidebar-tab active" data-tab="product">Produkt</button>
+                <button class="sidebar-tab" data-tab="design">Design</button>
+                <button class="sidebar-tab" data-tab="effects">Effekte</button>
+                <button class="sidebar-tab" data-tab="ai">KI</button>
+            </div>
+
+            <div class="sidebar-content" id="sidebarContent">
+                <!-- Product Tab Content -->
+                <div class="tab-content active" data-content="product">
+                    <!-- Product Type -->
+                    <div class="panel-section">
+                        <div class="panel-header">
+                            <div class="panel-title">Produkt Typ</div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="control-group">
+                                <select class="control-input" id="productType">
+                                    <option value="tshirt">T-Shirt</option>
+                                    <option value="hoodie">Hoodie</option>
+                                    <option value="mug">Tasse</option>
+                                    <option value="phone">Phone Case</option>
+                                    <option value="poster">Poster/Canvas</option>
+                                    <option value="bag">Stofftasche</option>
+                                    <option value="cap">Cap</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Material & Texture -->
+                    <div class="panel-section">
+                        <div class="panel-header">
+                            <div class="panel-title">Material & Textur</div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="control-group">
+                                <label class="control-label">Material Typ</label>
+                                <select class="control-input" id="materialType">
+                                    <option value="cotton">Baumwolle</option>
+                                    <option value="polyester">Polyester</option>
+                                    <option value="blend">Mischgewebe</option>
+                                    <option value="ceramic">Keramik</option>
+                                    <option value="plastic">Plastik</option>
+                                    <option value="canvas">Canvas</option>
+                                </select>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="control-label">Textur</label>
+                                <div class="texture-grid">
+                                    <div class="texture-item active" data-texture="smooth">
+                                        <div class="texture-preview" style="background: linear-gradient(#fff, #f0f0f0)"></div>
+                                    </div>
+                                    <div class="texture-item" data-texture="fabric">
+                                        <div class="texture-preview" style="background: repeating-linear-gradient(90deg, #e0e0e0, #e0e0e0 2px, #f0f0f0 2px, #f0f0f0 4px)"></div>
+                                    </div>
+                                    <div class="texture-item" data-texture="rough">
+                                        <div class="texture-preview" style="background: radial-gradient(circle, #d0d0d0 20%, #f0f0f0 20%)"></div>
+                                    </div>
+                                    <div class="texture-item" data-texture="knit">
+                                        <div class="texture-preview" style="background: repeating-conic-gradient(#e0e0e0 0deg 90deg, #f0f0f0 90deg 180deg)"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label">Eigene Textur hochladen</label>
+                                <input type="file" class="control-input" accept="image/*" id="customTexture">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Colors -->
+                    <div class="panel-section">
+                        <div class="panel-header">
+                            <div class="panel-title">Farben</div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="color-picker-group">
+                                <div class="color-picker-item">
+                                    <span class="color-picker-label">Produkt</span>
+                                    <div class="color-picker-wrapper">
+                                        <input type="color" class="color-picker" id="productColor" value="#2c3e50">
+                                        <div class="color-display"></div>
+                                    </div>
+                                </div>
+                                <div class="color-picker-item">
+                                    <span class="color-picker-label">Akzent</span>
+                                    <div class="color-picker-wrapper">
+                                        <input type="color" class="color-picker" id="accentColor" value="#e74c3c">
+                                        <div class="color-display"></div>
+                                    </div>
+                                </div>
+                                <div class="color-picker-item">
+                                    <span class="color-picker-label">Hintergrund</span>
+                                    <div class="color-picker-wrapper">
+                                        <input type="color" class="color-picker" id="bgColor" value="#ecf0f1">
+                                        <div class="color-display"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Design Tab Content -->
+                <div class="tab-content" data-content="design">
+                    <!-- Text Design -->
+                    <div class="panel-section">
+                        <div class="panel-header">
+                            <div class="panel-title">Text Design</div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="control-group">
+                                <label class="control-label">Text Inhalt</label>
+                                <textarea class="control-input" id="designText" rows="3">AWESOME
+DESIGN</textarea>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label">Schriftart</label>
+                                <select class="control-input" id="fontFamily">
+                                    <option value="Arial">Arial</option>
+                                    <option value="Helvetica">Helvetica</option>
+                                    <option value="Impact">Impact</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Courier New">Courier New</option>
+                                </select>
+                            </div>
+
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span class="slider-label">Schriftgröße</span>
+                                    <span class="slider-value" id="fontSizeValue">24px</span>
+                                </div>
+                                <input type="range" class="slider" id="fontSize" min="8" max="72" value="24">
+                            </div>
+
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span class="slider-label">Buchstabenabstand</span>
+                                    <span class="slider-value" id="letterSpacingValue">0px</span>
+                                </div>
+                                <input type="range" class="slider" id="letterSpacing" min="-5" max="20" value="0">
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label">Text Farbe</label>
+                                <input type="color" class="control-input" id="textColor" value="#ffffff">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Upload -->
+                    <div class="panel-section">
+                        <div class="panel-header">
+                            <div class="panel-title">Bild/Logo</div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="control-group">
+                                <label class="control-label">Bild hochladen</label>
+                                <input type="file" class="control-input" accept="image/*" id="uploadImage">
+                            </div>
+
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span class="slider-label">Bildgröße</span>
+                                    <span class="slider-value" id="imageSizeValue">100%</span>
+                                </div>
+                                <input type="range" class="slider" id="imageSize" min="10" max="200" value="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Position & Transform -->
+                    <div class="panel-section">
+                        <div class="panel-header">
+                            <div class="panel-title">Position & Transform</div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span class="slider-label">X Position</span>
+                                    <span class="slider-value" id="xPosValue">150px</span>
+                                </div>
+                                <input type="range" class="slider" id="xPos" min="0" max="500" value="150">
+                            </div>
+
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span class="slider-label">Y Position</span>
+                                    <span class="slider-value" id="yPosValue">200px</span>
+                                </div>
+                                <input type="range" class="slider" id="yPos" min="0" max="500" value="200">
+                            </div>
+
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span class="slider-label">Rotation</span>
+                                    <span class="slider-value" id="rotationValue">0°</span>
+                                </div>
+                                <input type="range" class="slider" id="rotation" min="-180" max="180" value="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Effects Tab Content -->
+                <div class="tab-content" data-content="effects">
+                    <!-- Material Effects -->
+                    <div class="panel-section">
+                        <div class="panel-header">
+                            <div class="panel-title">Material Effekte</div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span class="slider-label">Falten</span>
+                                    <span class="slider-value" id="wrinklesValue">50%</span>
+                                </div>
+                                <input type="range" class="slider" id="wrinkles" min="0" max="100" value="50">
+                            </div>
+
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span class="slider-label">Glanz</span>
+                                    <span class="slider-value" id="glossValue">30%</span>
+                                </div>
+                                <input type="range" class="slider" id="gloss" min="0" max="100" value="30">
+                            </div>
+
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span class="slider-label">Rauheit</span>
+                                    <span class="slider-value" id="roughnessValue">70%</span>
+                                </div>
+                                <input type="range" class="slider" id="roughness" min="0" max="100" value="70">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lighting -->
+                    <div class="panel-section">
+                        <div class="panel-header">
+                            <div class="panel-title">Beleuchtung</div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span class="slider-label">Helligkeit</span>
+                                    <span class="slider-value" id="brightnessValue">100%</span>
+                                </div>
+                                <input type="range" class="slider" id="brightness" min="50" max="150" value="100">
+                            </div>
+
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span class="slider-label">Kontrast</span>
+                                    <span class="slider-value" id="contrastValue">100%</span>
+                                </div>
+                                <input type="range" class="slider" id="contrast" min="50" max="150" value="100">
+                            </div>
+
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span class="slider-label">Schatten</span>
+                                    <span class="slider-value" id="shadowValue">50%</span>
+                                </div>
+                                <input type="range" class="slider" id="shadow" min="0" max="100" value="50">
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label">Lichtrichtung</label>
+                                <select class="control-input" id="lightDirection">
+                                    <option value="top">Oben</option>
+                                    <option value="topRight">Oben Rechts</option>
+                                    <option value="right">Rechts</option>
+                                    <option value="bottomRight">Unten Rechts</option>
+                                    <option value="bottom">Unten</option>
+                                    <option value="bottomLeft">Unten Links</option>
+                                    <option value="left">Links</option>
+                                    <option value="topLeft">Oben Links</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3D Effects -->
+                    <div class="panel-section">
+                        <div class="panel-header">
+                            <div class="panel-title">3D Effekte</div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span class="slider-label">Perspektive</span>
+                                    <span class="slider-value" id="perspectiveValue">0°</span>
+                                </div>
+                                <input type="range" class="slider" id="perspective" min="-45" max="45" value="0">
+                            </div>
+
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span class="slider-label">Tiefe</span>
+                                    <span class="slider-value" id="depthValue">10px</span>
+                                </div>
+                                <input type="range" class="slider" id="depth" min="0" max="50" value="10">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Tab Content -->
+                <div class="tab-content" data-content="ai">
+                    <!-- AI Options -->
+                    <div class="panel-section">
+                        <div class="panel-header">
+                            <div class="panel-title">KI-Generierung</div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="control-group">
+                                <label class="control-label">Design Prompt</label>
+                                <textarea class="control-input" id="aiPrompt" rows="4" placeholder="Beschreibe dein gewünschtes Design..."></textarea>
+                            </div>
+
+                            <button class="btn btn-primary" style="width: 100%;" id="generateAI">🎨 Design generieren</button>
+                        </div>
+                    </div>
+
+                    <!-- AI Enhancements -->
+                    <div class="panel-section">
+                        <div class="panel-header">
+                            <div class="panel-title">KI-Verbesserungen</div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="control-group">
+                                <label class="control-label">
+                                    <input type="checkbox" id="aiEnhance"> Automatische Verbesserung
+                                </label>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label">
+                                    <input type="checkbox" id="aiBackground"> Hintergrund entfernen
+                                </label>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label">
+                                    <input type="checkbox" id="aiUpscale"> Auflösung erhöhen
+                                </label>
+                            </div>
+
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <span class="slider-label">Realismus</span>
+                                    <span class="slider-value" id="realismValue">Hoch</span>
+                                </div>
+                                <input type="range" class="slider" id="realism" min="0" max="2" value="1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Model Selection -->
+                    <div class="panel-section">
+                        <div class="panel-header">
+                            <div class="panel-title">Model Auswahl</div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="control-group">
+                                <label class="control-label">
+                                    <input type="checkbox" id="useModel"> Model verwenden
+                                </label>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label">Model Typ</label>
+                                <select class="control-input" id="modelType">
+                                    <option value="male">Mann</option>
+                                    <option value="female">Frau</option>
+                                    <option value="child">Kind</option>
+                                    <option value="neutral">Neutral</option>
+                                </select>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label">Pose</label>
+                                <select class="control-input" id="modelPose">
+                                    <option value="front">Frontal</option>
+                                    <option value="side">Seitlich</option>
+                                    <option value="back">Rücken</option>
+                                    <option value="dynamic">Dynamisch</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Canvas Area -->
+        <div class="canvas-area">
+            <!-- Module Tabs -->
+            <div class="module-tabs">
+                <button class="module-tab active" data-module="live">Live Mockup</button>
+                <button class="module-tab" data-module="design">Design Studio</button>
+                <button class="module-tab" data-module="3d">3D</button>
+                <button class="module-tab" data-module="layout">Layout</button>
+                <button class="module-tab" data-module="editor">Editor</button>
+            </div>
+
+            <!-- Canvas Toolbar -->
+            <div class="canvas-toolbar">
+                <div class="toolbar-group">
+                    <button class="toolbar-btn active" id="viewFront">Vorderseite</button>
+                    <button class="toolbar-btn" id="viewAngle">Schräg</button>
+                    <button class="toolbar-btn" id="viewFlat">Flach</button>
+                    <button class="toolbar-btn" id="view3D">3D</button>
+                </div>
+
+                <div class="toolbar-group">
+                    <div class="zoom-control">
+                        <button class="toolbar-btn" id="zoomOut">−</button>
+                        <span class="zoom-value" id="zoomValue">100%</span>
+                        <button class="toolbar-btn" id="zoomIn">+</button>
+                    </div>
+                    <button class="toolbar-btn" id="resetView">⟲ Reset</button>
+                    <button class="toolbar-btn" id="gridToggle">⊞ Raster</button>
+                </div>
+
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" id="duplicate">📋 Duplizieren</button>
+                    <button class="toolbar-btn" id="flipH">↔ Spiegeln H</button>
+                    <button class="toolbar-btn" id="flipV">↕ Spiegeln V</button>
+                </div>
+            </div>
+
+            <!-- Main Canvas Container -->
+            <div class="canvas-container">
+                <div class="canvas-viewport" id="canvasViewport">
+                    <div class="mockup-stage" id="mockupStage">
+                        <!-- Dynamic mockup content will be rendered here -->
+                    </div>
+                </div>
+                
+                <!-- Loading Overlay -->
+                <div class="loading-overlay" id="loadingOverlay">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Properties Panel -->
+        <div class="properties-panel">
+            <!-- Layers -->
+            <div class="layers-panel">
+                <div class="layers-header">
+                    <span class="layers-title">Ebenen</span>
+                    <button class="layer-add-btn">+</button>
+                </div>
+                <div class="layers-list" id="layersList">
+                    <div class="layer-item active">
+                        <div class="layer-visibility visible"></div>
+                        <div class="layer-icon">T</div>
+                        <span class="layer-name">Text Layer</span>
+                        <button class="layer-lock">🔓</button>
+                    </div>
+                    <div class="layer-item">
+                        <div class="layer-visibility visible"></div>
+                        <div class="layer-icon">👕</div>
+                        <span class="layer-name">Product</span>
+                        <button class="layer-lock locked">🔒</button>
+                    </div>
+                    <div class="layer-item">
+                        <div class="layer-visibility visible"></div>
+                        <div class="layer-icon">🎨</div>
+                        <span class="layer-name">Background</span>
+                        <button class="layer-lock">🔓</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Properties -->
+            <div class="panel-section">
+                <div class="panel-header">
+                    <div class="panel-title">Eigenschaften</div>
+                </div>
+                <div class="panel-content">
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span class="slider-label">Opazität</span>
+                            <span class="slider-value">100%</span>
+                        </div>
+                        <input type="range" class="slider" min="0" max="100" value="100">
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Blend Mode</label>
+                        <select class="control-input">
+                            <option>Normal</option>
+                            <option>Multiply</option>
+                            <option>Screen</option>
+                            <option>Overlay</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Quick Actions -->
+            <div class="panel-section">
+                <div class="panel-header">
+                    <div class="panel-title">Export</div>
+                </div>
+                <div class="panel-content">
+                    <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;" id="quickExportPNG">
+                        📥 Export als PNG
+                    </button>
+                    <button class="btn btn-primary" style="width: 100%;" id="quickExportSVG">
+                        📄 Export als SVG
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-item">
+            <div class="status-indicator"></div>
+            <span>Bereit</span>
+        </div>
+        <div class="status-item">
+            <span>Zoom: 100%</span>
+        </div>
+        <div class="status-item">
+            <span>T-Shirt Mockup</span>
+        </div>
+        <div class="status-item">
+            <span>1920 x 1080px</span>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal" id="exportModal">
+        <div class="modal-content">
+            <div class="modal-header">Export Settings</div>
+            <div class="modal-body">
+                <div class="export-options">
+                    <div class="export-option" data-format="png">
+                        <div class="export-format">PNG</div>
+                        <div class="export-desc">Beste Qualität mit Transparenz</div>
+                    </div>
+                    <div class="export-option" data-format="jpg">
+                        <div class="export-format">JPG</div>
+                        <div class="export-desc">Komprimiert, ohne Transparenz</div>
+                    </div>
+                    <div class="export-option" data-format="svg">
+                        <div class="export-format">SVG</div>
+                        <div class="export-desc">Vektor Format, skalierbar</div>
+                    </div>
+                    <div class="export-option" data-format="pdf">
+                        <div class="export-format">PDF</div>
+                        <div class="export-desc">Druckfertig</div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Auflösung</label>
+                    <select class="control-input">
+                        <option>72 DPI (Web)</option>
+                        <option>150 DPI (Standard)</option>
+                        <option>300 DPI (Print)</option>
+                        <option>600 DPI (High Quality)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" id="cancelExport">Abbrechen</button>
+                <button class="btn btn-primary" id="confirmExport">Exportieren</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application State Management
+        const appState = {
+            currentProduct: 'tshirt',
+            currentView: 'front',
+            currentModule: 'live',
+            zoom: 100,
+            gridEnabled: false,
+            selectedTool: 'select',
+            layers: [],
+            history: [],
+            historyIndex: -1,
+            design: {
+                text: 'AWESOME\nDESIGN',
+                fontSize: 24,
+                fontFamily: 'Arial',
+                textColor: '#ffffff',
+                letterSpacing: 0,
+                xPos: 150,
+                yPos: 200,
+                rotation: 0,
+                imageUrl: null,
+                imageSize: 100
+            },
+            product: {
+                color: '#2c3e50',
+                accentColor: '#e74c3c',
+                bgColor: '#ecf0f1',
+                material: 'cotton',
+                texture: 'smooth'
+            },
+            effects: {
+                wrinkles: 50,
+                gloss: 30,
+                roughness: 70,
+                brightness: 100,
+                contrast: 100,
+                shadow: 50,
+                lightDirection: 'topRight',
+                perspective: 0,
+                depth: 10
+            },
+            ai: {
+                enhance: false,
+                removeBackground: false,
+                upscale: false,
+                realism: 1,
+                useModel: false,
+                modelType: 'neutral',
+                modelPose: 'front'
+            }
+        };
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeEventListeners();
+            renderMockup();
+            loadFromLocalStorage();
+        });
+
+        // Event Listeners
+        function initializeEventListeners() {
+            // Sidebar Tabs
+            document.querySelectorAll('.sidebar-tab').forEach(tab => {
+                tab.addEventListener('click', () => switchSidebarTab(tab.dataset.tab));
+            });
+
+            // Module Tabs
+            document.querySelectorAll('.module-tab').forEach(tab => {
+                tab.addEventListener('click', () => switchModule(tab.dataset.module));
+            });
+
+            // Tool Selection
+            document.querySelectorAll('.tool-btn').forEach(tool => {
+                tool.addEventListener('click', () => selectTool(tool.dataset.tool));
+            });
+
+            // Product Type
+            document.getElementById('productType').addEventListener('change', (e) => {
+                appState.currentProduct = e.target.value;
+                renderMockup();
+                saveToHistory();
+            });
+
+            // View Controls
+            document.getElementById('viewFront').addEventListener('click', () => setView('front'));
+            document.getElementById('viewAngle').addEventListener('click', () => setView('angle'));
+            document.getElementById('viewFlat').addEventListener('click', () => setView('flat'));
+            document.getElementById('view3D').addEventListener('click', () => setView('3d'));
+
+            // Zoom Controls
+            document.getElementById('zoomIn').addEventListener('click', () => adjustZoom(10));
+            document.getElementById('zoomOut').addEventListener('click', () => adjustZoom(-10));
+            document.getElementById('resetView').addEventListener('click', resetView);
+
+            // Grid Toggle
+            document.getElementById('gridToggle').addEventListener('click', toggleGrid);
+
+            // Design Controls
+            document.getElementById('designText').addEventListener('input', (e) => {
+                appState.design.text = e.target.value;
+                renderMockup();
+            });
+
+            document.getElementById('fontSize').addEventListener('input', (e) => {
+                appState.design.fontSize = e.target.value;
+                document.getElementById('fontSizeValue').textContent = `${e.target.value}px`;
+                renderMockup();
+            });
+
+            document.getElementById('fontFamily').addEventListener('change', (e) => {
+                appState.design.fontFamily = e.target.value;
+                renderMockup();
+            });
+
+            document.getElementById('textColor').addEventListener('input', (e) => {
+                appState.design.textColor = e.target.value;
+                renderMockup();
+            });
+
+            // Color Controls
+            document.getElementById('productColor').addEventListener('input', (e) => {
+                appState.product.color = e.target.value;
+                renderMockup();
+            });
+
+            // Effects Controls
+            document.getElementById('wrinkles').addEventListener('input', (e) => {
+                appState.effects.wrinkles = e.target.value;
+                document.getElementById('wrinklesValue').textContent = `${e.target.value}%`;
+                renderMockup();
+            });
+
+            document.getElementById('gloss').addEventListener('input', (e) => {
+                appState.effects.gloss = e.target.value;
+                document.getElementById('glossValue').textContent = `${e.target.value}%`;
+                renderMockup();
+            });
+
+            // Position Controls
+            document.getElementById('rotation').addEventListener('input', (e) => {
+                appState.design.rotation = e.target.value;
+                document.getElementById('rotationValue').textContent = `${e.target.value}°`;
+                renderMockup();
+            });
+
+            // Image Upload
+            document.getElementById('uploadImage').addEventListener('change', handleImageUpload);
+
+            // Export Controls
+            document.getElementById('exportBtn').addEventListener('click', showExportModal);
+            document.getElementById('quickExportPNG').addEventListener('click', () => exportAs('png'));
+            document.getElementById('quickExportSVG').addEventListener('click', () => exportAs('svg'));
+
+            // Save/Load
+            document.getElementById('saveBtn').addEventListener('click', saveProject);
+            document.getElementById('importBtn').addEventListener('click', importProject);
+
+            // Undo/Redo
+            document.getElementById('undoBtn').addEventListener('click', undo);
+            document.getElementById('redoBtn').addEventListener('click', redo);
+
+            // AI Generation
+            document.getElementById('generateAI').addEventListener('click', generateAIDesign);
+
+            // Panel Collapse
+            document.querySelectorAll('.panel-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    header.parentElement.classList.toggle('collapsed');
+                });
+            });
+
+            // Layer Controls
+            document.querySelectorAll('.layer-visibility').forEach(vis => {
+                vis.addEventListener('click', toggleLayerVisibility);
+            });
+
+            document.querySelectorAll('.layer-lock').forEach(lock => {
+                lock.addEventListener('click', toggleLayerLock);
+            });
+
+            // Texture Selection
+            document.querySelectorAll('.texture-item').forEach(texture => {
+                texture.addEventListener('click', () => selectTexture(texture.dataset.texture));
+            });
+
+            // Export Modal
+            document.getElementById('cancelExport').addEventListener('click', closeExportModal);
+            document.getElementById('confirmExport').addEventListener('click', confirmExport);
+
+            // Export Options
+            document.querySelectorAll('.export-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.export-option').forEach(o => o.classList.remove('selected'));
+                    option.classList.add('selected');
+                });
+            });
+            // Additional Typography Controls
+            document.getElementById('letterSpacing').addEventListener('input', (e) => {
+                const value = parseInt(e.target.value, 10) || 0;
+                appState.design.letterSpacing = value;
+                const label = document.getElementById('letterSpacingValue');
+                if (label) label.textContent = `${value}px`;
+                renderMockup();
+            });
+
+            // Image Size Control
+            document.getElementById('imageSize').addEventListener('input', (e) => {
+                const value = parseInt(e.target.value, 10) || 0;
+                appState.design.imageSize = value;
+                const label = document.getElementById('imageSizeValue');
+                if (label) label.textContent = `${value}%`;
+                renderMockup();
+            });
+
+            // Position Controls (X/Y)
+            document.getElementById('xPos').addEventListener('input', (e) => {
+                const value = parseInt(e.target.value, 10) || 0;
+                appState.design.xPos = value;
+                const label = document.getElementById('xPosValue');
+                if (label) label.textContent = `${value}px`;
+                renderMockup();
+            });
+
+            document.getElementById('yPos').addEventListener('input', (e) => {
+                const value = parseInt(e.target.value, 10) || 0;
+                appState.design.yPos = value;
+                const label = document.getElementById('yPosValue');
+                if (label) label.textContent = `${value}px`;
+                renderMockup();
+            });
+
+            // Additional Effect Controls
+            document.getElementById('brightness').addEventListener('input', (e) => {
+                const value = parseInt(e.target.value, 10) || 0;
+                appState.effects.brightness = value;
+                const label = document.getElementById('brightnessValue');
+                if (label) label.textContent = `${value}%`;
+                applyEffects();
+            });
+
+            document.getElementById('contrast').addEventListener('input', (e) => {
+                const value = parseInt(e.target.value, 10) || 0;
+                appState.effects.contrast = value;
+                const label = document.getElementById('contrastValue');
+                if (label) label.textContent = `${value}%`;
+                applyEffects();
+            });
+
+            document.getElementById('shadow').addEventListener('input', (e) => {
+                const value = parseInt(e.target.value, 10) || 0;
+                appState.effects.shadow = value;
+                const label = document.getElementById('shadowValue');
+                if (label) label.textContent = `${value}%`;
+                applyEffects();
+            });
+
+            // Background / Accent Color Controls
+            document.getElementById('accentColor').addEventListener('input', (e) => {
+                appState.product.accentColor = e.target.value;
+                renderMockup();
+            });
+
+            document.getElementById('bgColor').addEventListener('input', (e) => {
+                const value = e.target.value;
+                appState.product.bgColor = value;
+                const viewport = document.getElementById('canvasViewport');
+                if (viewport) {
+                    viewport.style.backgroundColor = value;
+                }
+            });
+
+        }
+
+        // Sidebar Tab Switching
+        function switchSidebarTab(tab) {
+            document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+            
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelector(`[data-content="${tab}"]`).classList.add('active');
+        }
+
+        // Module Switching
+        function switchModule(module) {
+            document.querySelectorAll('.module-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`[data-module="${module}"]`).classList.add('active');
+            appState.currentModule = module;
+            renderMockup();
+        }
+
+        // Tool Selection
+        function selectTool(tool) {
+            document.querySelectorAll('.tool-btn').forEach(t => t.classList.remove('active'));
+            document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
+            appState.selectedTool = tool;
+        }
+
+        // View Management
+        function setView(view) {
+            document.querySelectorAll('.canvas-toolbar .toolbar-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            switch(view) {
+                case 'front':
+                    document.getElementById('viewFront').classList.add('active');
+                    break;
+                case 'angle':
+                    document.getElementById('viewAngle').classList.add('active');
+                    break;
+                case 'flat':
+                    document.getElementById('viewFlat').classList.add('active');
+                    break;
+                case '3d':
+                    document.getElementById('view3D').classList.add('active');
+                    break;
+            }
+            
+            appState.currentView = view;
+            renderMockup();
+        }
+
+        // Zoom Controls
+        function adjustZoom(delta) {
+            appState.zoom = Math.max(50, Math.min(200, appState.zoom + delta));
+            document.getElementById('zoomValue').textContent = `${appState.zoom}%`;
+            renderMockup();
+        }
+
+        function resetView() {
+            appState.zoom = 100;
+            appState.design.rotation = 0;
+            document.getElementById('zoomValue').textContent = '100%';
+            document.getElementById('rotation').value = 0;
+            document.getElementById('rotationValue').textContent = '0°';
+            renderMockup();
+        }
+
+        // Grid Toggle
+        function toggleGrid() {
+            appState.gridEnabled = !appState.gridEnabled;
+            document.getElementById('gridToggle').classList.toggle('active', appState.gridEnabled);
+            
+            const viewport = document.getElementById('canvasViewport');
+            if (appState.gridEnabled) {
+                viewport.style.backgroundImage = 'repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0px, transparent 1px, transparent 20px, rgba(255,255,255,0.05) 21px), repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0px, transparent 1px, transparent 20px, rgba(255,255,255,0.05) 21px)';
+            } else {
+                viewport.style.backgroundImage = 'none';
+            }
+        }
+
+        // Render Mockup
+        function renderMockup() {
+            const stage = document.getElementById('mockupStage');
+            const { currentProduct, currentView, zoom, design, product, effects } = appState;
+            
+            let transform = `scale(${zoom / 100})`;
+            if (currentView === 'angle') {
+                transform += ' perspective(1000px) rotateY(25deg)';
+            } else if (currentView === '3d') {
+                transform += ' perspective(1000px) rotateX(15deg) rotateY(30deg)';
+            }
+            
+            stage.style.transform = transform;
+            
+            let mockupHTML = '';
+            
+            switch(currentProduct) {
+                case 'tshirt':
+                    mockupHTML = createTShirtMockup();
+                    break;
+                case 'hoodie':
+                    mockupHTML = createHoodieMockup();
+                    break;
+                case 'mug':
+                    mockupHTML = createMugMockup();
+                    break;
+                case 'phone':
+                    mockupHTML = createPhoneMockup();
+                    break;
+                case 'poster':
+                    mockupHTML = createPosterMockup();
+                    break;
+                default:
+                    mockupHTML = createTShirtMockup();
+            }
+            
+            stage.innerHTML = mockupHTML;
+            applyEffects();
+        }
+
+        // Create Mockup Functions
+        function createTShirtMockup() {
+            const { design, product } = appState;
+            return `
+                <div class="tshirt-3d">
+                    <div class="tshirt-body" style="background: ${product.color}">
+                        <div class="tshirt-collar"></div>
+                        <div class="tshirt-fold fold1"></div>
+                        <div class="tshirt-fold fold2"></div>
+                        <div class="tshirt-fold fold3"></div>
+                        <div class="tshirt-design-area" style="top: ${design.yPos}px; left: ${design.xPos}px; transform: translate(-50%, -50%) rotate(${design.rotation}deg)">
+                            <div class="design-content">
+                                ${design.imageUrl ? 
+                                    `<img src="${design.imageUrl}" class="design-image" style="width: ${design.imageSize}%">` :
+                                    `<div class="design-text" style="
+                                        font-size: ${design.fontSize}px;
+                                        font-family: ${design.fontFamily};
+                                        color: ${design.textColor};
+                                        letter-spacing: ${design.letterSpacing}px;
+                                    ">${design.text.replace(/\n/g, '<br>')}</div>`
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createHoodieMockup() {
+            const { design, product } = appState;
+            return `
+                <div class="hoodie-3d">
+                    <div class="hoodie-body" style="background: ${product.color}">
+                        <div class="hoodie-hood"></div>
+                        <div class="hoodie-pocket"></div>
+                        <div class="hoodie-strings">
+                            <div class="hoodie-string"></div>
+                            <div class="hoodie-string"></div>
+                        </div>
+                        <div class="hoodie-design-area" style="top: ${design.yPos}px; left: ${design.xPos}px; transform: translate(-50%, -50%) rotate(${design.rotation}deg)">
+                            <div class="design-content">
+                                ${design.imageUrl ? 
+                                    `<img src="${design.imageUrl}" class="design-image" style="width: ${design.imageSize}%">` :
+                                    `<div class="design-text" style="
+                                        font-size: ${design.fontSize}px;
+                                        font-family: ${design.fontFamily};
+                                        color: ${design.textColor};
+                                    ">${design.text.replace(/\n/g, '<br>')}</div>`
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createMugMockup() {
+            const { design, product } = appState;
+            return `
+                <div class="mug-3d">
+                    <div class="mug-body" style="background: ${product.color === '#2c3e50' ? '#ffffff' : product.color}">
+                        <div class="mug-rim"></div>
+                        <div class="mug-handle"></div>
+                        <div class="mug-design-area" style="top: ${design.yPos}px; left: ${design.xPos}px; transform: translate(-50%, -50%) rotate(${design.rotation}deg)">
+                            <div class="design-content">
+                                ${design.imageUrl ? 
+                                    `<img src="${design.imageUrl}" class="design-image" style="width: ${design.imageSize}%">` :
+                                    `<div class="design-text" style="
+                                        font-size: ${design.fontSize}px;
+                                        font-family: ${design.fontFamily};
+                                        color: ${product.color === '#ffffff' ? '#333' : design.textColor};
+                                    ">${design.text.replace(/\n/g, '<br>')}</div>`
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createPhoneMockup() {
+            const { design, product } = appState;
+            return `
+                <div class="phone-3d">
+                    <div class="phone-frame" style="background: ${product.color}">
+                        <div class="phone-screen">
+                            <div class="phone-notch">
+                                <div class="phone-camera"></div>
+                            </div>
+                            <div class="phone-design-area" style="top: ${design.yPos}px; left: ${design.xPos}px; transform: translate(-50%, -50%) rotate(${design.rotation}deg)">
+                                <div class="design-content">
+                                    ${design.imageUrl ? 
+                                        `<img src="${design.imageUrl}" class="design-image" style="width: ${design.imageSize}%">` :
+                                        `<div class="design-text" style="
+                                            font-size: ${design.fontSize}px;
+                                            font-family: ${design.fontFamily};
+                                            color: #333;
+                                        ">${design.text.replace(/\n/g, '<br>')}</div>`
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createPosterMockup() {
+            const { design, product } = appState;
+            return `
+                <div class="poster-3d">
+                    <div class="poster-frame">
+                        <div class="poster-canvas" style="background: ${product.color === '#2c3e50' ? '#ffffff' : product.color}">
+                            <div class="poster-design-area" style="top: ${design.yPos}px; left: ${design.xPos}px; transform: translate(-50%, -50%) rotate(${design.rotation}deg)">
+                                <div class="design-content">
+                                    ${design.imageUrl ? 
+                                        `<img src="${design.imageUrl}" class="design-image" style="width: ${design.imageSize}%">` :
+                                        `<div class="design-text" style="
+                                            font-size: ${design.fontSize}px;
+                                            font-family: ${design.fontFamily};
+                                            color: ${product.color === '#ffffff' ? '#333' : design.textColor};
+                                        ">${design.text.replace(/\n/g, '<br>')}</div>`
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Apply Effects
+        function applyEffects() {
+            const { effects } = appState;
+            const mockup = document.querySelector('.mockup-stage > div');
+            
+            if (mockup) {
+                const filters = [];
+                
+                if (effects.brightness !== 100) {
+                    filters.push(`brightness(${effects.brightness}%)`);
+                }
+                
+                if (effects.contrast !== 100) {
+                    filters.push(`contrast(${effects.contrast}%)`);
+                }
+                
+                if (effects.gloss > 0) {
+                    // Add gloss effect simulation
+                    const glossOverlay = document.createElement('div');
+                    glossOverlay.style.position = 'absolute';
+                    glossOverlay.style.top = '0';
+                    glossOverlay.style.left = '0';
+                    glossOverlay.style.right = '0';
+                    glossOverlay.style.bottom = '0';
+                    glossOverlay.style.background = `linear-gradient(135deg, 
+                        transparent 40%, 
+                        rgba(255,255,255,${effects.gloss / 200}) 50%, 
+                        transparent 60%)`;
+                    glossOverlay.style.pointerEvents = 'none';
+                    mockup.appendChild(glossOverlay);
+                }
+                
+                mockup.style.filter = filters.join(' ');
+                
+                if (effects.shadow > 0) {
+                    mockup.style.boxShadow = `0 ${effects.shadow / 2}px ${effects.shadow}px rgba(0,0,0,${effects.shadow / 200})`;
+                }
+            }
+        }
+
+        // Image Upload Handler
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    appState.design.imageUrl = e.target.result;
+                    renderMockup();
+                    saveToHistory();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Texture Selection
+        function selectTexture(texture) {
+            document.querySelectorAll('.texture-item').forEach(t => t.classList.remove('active'));
+            document.querySelector(`[data-texture="${texture}"]`).classList.add('active');
+            appState.product.texture = texture;
+            renderMockup();
+        }
+
+        // Layer Controls
+        function toggleLayerVisibility(event) {
+            event.target.classList.toggle('visible');
+        }
+
+        function toggleLayerLock(event) {
+            event.target.classList.toggle('locked');
+            event.target.textContent = event.target.classList.contains('locked') ? '🔒' : '🔓';
+        }
+
+        // History Management
+        function saveToHistory() {
+            const state = JSON.parse(JSON.stringify(appState));
+            appState.history = appState.history.slice(0, appState.historyIndex + 1);
+            appState.history.push(state);
+            appState.historyIndex++;
+        }
+
+        function undo() {
+            if (appState.historyIndex > 0) {
+                appState.historyIndex--;
+                const previousState = appState.history[appState.historyIndex];
+                Object.assign(appState, previousState);
+                renderMockup();
+            }
+        }
+
+        function redo() {
+            if (appState.historyIndex < appState.history.length - 1) {
+                appState.historyIndex++;
+                const nextState = appState.history[appState.historyIndex];
+                Object.assign(appState, nextState);
+                renderMockup();
+            }
+        }
+
+        // Export Functions
+        function showExportModal() {
+            document.getElementById('exportModal').classList.add('active');
+        }
+
+        function closeExportModal() {
+            document.getElementById('exportModal').classList.remove('active');
+        }
+
+        function confirmExport() {
+            const selectedOption = document.querySelector('.export-option.selected');
+            if (selectedOption) {
+                const format = selectedOption.dataset.format;
+                exportAs(format);
+            }
+            closeExportModal();
+        }
+
+        function exportAs(format) {
+            const stage = document.getElementById('mockupStage');
+            if (!stage) {
+                console.error('Kein Export möglich: Bühne nicht gefunden.');
+                return;
+            }
+
+            showLoading();
+
+            const doHide = () => hideLoading();
+
+            if (format === 'png' || format === 'jpg') {
+                if (typeof html2canvas === 'undefined') {
+                    alert('html2canvas Bibliothek nicht geladen – Export als Bild nicht möglich.');
+                    doHide();
+                    return;
+                }
+
+                html2canvas(stage, { backgroundColor: null }).then(canvas => {
+                    const mime = format === 'png' ? 'image/png' : 'image/jpeg';
+                    const dataUrl = canvas.toDataURL(mime);
+                    const link = document.createElement('a');
+                    link.href = dataUrl;
+                    link.download = `mockup.${format}`;
+                    link.click();
+                    doHide();
+                }).catch(error => {
+                    console.error('Fehler beim Bild-Export:', error);
+                    alert('Beim Export ist ein Fehler aufgetreten.');
+                    doHide();
+                });
+            } else if (format === 'svg') {
+                const svgContent = stage.innerHTML;
+                const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'mockup.svg';
+                link.click();
+                doHide();
+            } else if (format === 'pdf') {
+                // Vereinfachter PDF-Export: wir erzeugen ein PNG, das der Nutzer weiterverarbeiten kann.
+                if (typeof html2canvas === 'undefined') {
+                    alert('html2canvas Bibliothek nicht geladen – Export als PDF-Bild nicht möglich.');
+                    doHide();
+                    return;
+                }
+
+                html2canvas(stage, { backgroundColor: '#ffffff' }).then(canvas => {
+                    const dataUrl = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.href = dataUrl;
+                    link.download = 'mockup-pdf.png';
+                    link.click();
+                    doHide();
+                }).catch(error => {
+                    console.error('Fehler beim PDF-Export:', error);
+                    alert('Beim Export ist ein Fehler aufgetreten.');
+                    doHide();
+                });
+            } else {
+                console.warn('Unbekanntes Exportformat:', format);
+                doHide();
+            }
+        }
+
+        // Project Management
+        function saveProject() {
+            const projectData = JSON.stringify(appState);
+            localStorage.setItem('mockupProProject', projectData);
+            
+            // Also create downloadable JSON
+            const blob = new Blob([projectData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'mockup-project.json';
+            link.click();
+            
+            showNotification('Projekt gespeichert!');
+        }
+
+        function importProject() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const data = JSON.parse(event.target.result);
+                            Object.assign(appState, data);
+                            renderMockup();
+                            updateUIFromState();
+                            showNotification('Projekt importiert!');
+                        } catch (error) {
+                            alert('Fehler beim Importieren der Datei');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            
+            input.click();
+        }
+
+        // Local Storage
+        function saveToLocalStorage() {
+            localStorage.setItem('mockupProProject', JSON.stringify(appState));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('mockupProProject');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    Object.assign(appState, data);
+                    updateUIFromState();
+                    renderMockup();
+                } catch (error) {
+                    console.error('Error loading saved project:', error);
+                }
+            }
+        }
+
+        // Update UI from State
+        function updateUIFromState() {
+            // Produkt & Ansicht
+            document.getElementById('productType').value = appState.currentProduct;
+
+            // Text
+            document.getElementById('designText').value = appState.design.text;
+            document.getElementById('fontSize').value = appState.design.fontSize;
+            document.getElementById('fontSizeValue').textContent = `${appState.design.fontSize}px`;
+            document.getElementById('fontFamily').value = appState.design.fontFamily;
+            document.getElementById('textColor').value = appState.design.textColor;
+
+            // Typografie
+            const ls = document.getElementById('letterSpacing');
+            const lsVal = document.getElementById('letterSpacingValue');
+            if (ls) ls.value = appState.design.letterSpacing;
+            if (lsVal) lsVal.textContent = `${appState.design.letterSpacing}px`;
+
+            // Bildgröße & Position
+            const imgSize = document.getElementById('imageSize');
+            const imgSizeVal = document.getElementById('imageSizeValue');
+            if (imgSize) imgSize.value = appState.design.imageSize;
+            if (imgSizeVal) imgSizeVal.textContent = `${appState.design.imageSize}%`;
+
+            const xPos = document.getElementById('xPos');
+            const xPosVal = document.getElementById('xPosValue');
+            if (xPos) xPos.value = appState.design.xPos;
+            if (xPosVal) xPosVal.textContent = `${appState.design.xPos}px`;
+
+            const yPos = document.getElementById('yPos');
+            const yPosVal = document.getElementById('yPosValue');
+            if (yPos) yPos.value = appState.design.yPos;
+            if (yPosVal) yPosVal.textContent = `${appState.design.yPos}px`;
+
+            const rot = document.getElementById('rotation');
+            const rotVal = document.getElementById('rotationValue');
+            if (rot) rot.value = appState.design.rotation;
+            if (rotVal) rotVal.textContent = `${appState.design.rotation}°`;
+
+            // Produktfarben
+            document.getElementById('productColor').value = appState.product.color;
+            const accent = document.getElementById('accentColor');
+            if (accent) accent.value = appState.product.accentColor;
+            const bg = document.getElementById('bgColor');
+            if (bg) bg.value = appState.product.bgColor;
+
+            // Effekte
+            const wr = document.getElementById('wrinkles');
+            const wrVal = document.getElementById('wrinklesValue');
+            if (wr) wr.value = appState.effects.wrinkles;
+            if (wrVal) wrVal.textContent = `${appState.effects.wrinkles}%`;
+
+            const gl = document.getElementById('gloss');
+            const glVal = document.getElementById('glossValue');
+            if (gl) gl.value = appState.effects.gloss;
+            if (glVal) glVal.textContent = `${appState.effects.gloss}%`;
+
+            const br = document.getElementById('brightness');
+            const brVal = document.getElementById('brightnessValue');
+            if (br) br.value = appState.effects.brightness;
+            if (brVal) brVal.textContent = `${appState.effects.brightness}%`;
+
+            const ct = document.getElementById('contrast');
+            const ctVal = document.getElementById('contrastValue');
+            if (ct) ct.value = appState.effects.contrast;
+            if (ctVal) ctVal.textContent = `${appState.effects.contrast}%`;
+
+            const sh = document.getElementById('shadow');
+            const shVal = document.getElementById('shadowValue');
+            if (sh) sh.value = appState.effects.shadow;
+            if (shVal) shVal.textContent = `${appState.effects.shadow}%`;
+
+            // Zoom-Anzeige
+            const zoomVal = document.getElementById('zoomValue');
+            if (zoomVal) zoomVal.textContent = `${appState.zoom}%`;
+        }
+
+        // AI Design Generation (Simulated)
+        function generateAIDesign() {
+            const prompt = document.getElementById('aiPrompt').value;
+            if (!prompt) {
+                alert('Bitte geben Sie einen Design-Prompt ein');
+                return;
+            }
+            
+            showLoading();
+            
+            // Simulate AI generation
+            setTimeout(() => {
+                // Random design generation for demonstration
+                const designs = [
+                    'CREATIVE\nMINDS',
+                    'THINK\nDIFFERENT',
+                    'BE\nAWESOME',
+                    'DREAM\nBIG'
+                ];
+                
+                appState.design.text = designs[Math.floor(Math.random() * designs.length)];
+                appState.design.fontSize = 28 + Math.floor(Math.random() * 20);
+                appState.product.color = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+                
+                updateUIFromState();
+                renderMockup();
+                hideLoading();
+                showNotification('KI-Design generiert!');
+            }, 2000);
+        }
+
+        // Loading State
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        // Notifications
+        function showNotification(message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: var(--primary);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                z-index: 2000;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Auto-save
+        setInterval(() => {
+            saveToLocalStorage();
+        }, 30000);
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
